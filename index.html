@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Extrator de Telefones</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="container">
+    <header class="cabecalho">
+      <div class="cabecalho-meta">
+        <span class="badge"><span class="badge-dot"></span>LOCAL · CRAWLER</span>
+      </div>
+      <h1>Extrator de <span class="destaque">Telefones</span><span class="cursor">_</span></h1>
+      <p class="subtitulo">Cole uma URL por linha, extraia os telefones encontrados nas páginas e baixe o CSV.</p>
+    </header>
+
+    <section class="painel painel-entrada">
+      <div class="linha-rotulo">
+        <label for="urls" class="rotulo-fraco">&gt; Lista de sites</label>
+      </div>
+      <textarea id="urls" placeholder="https://exemplo.com.br
+https://outroexemplo.com"></textarea>
+
+      <div class="acoes">
+        <button id="btnIniciar" class="botao botao-destaque">▶ INICIAR EXTRAÇÃO</button>
+        <button id="btnCsv" class="botao" disabled>↓ BAIXAR CSV</button>
+        <span id="statusTexto" class="status-texto"></span>
+      </div>
+
+      <div class="progresso-wrap" id="progressoWrap" hidden>
+        <div class="progresso-barra">
+          <div class="progresso-fill" id="progressoFill"></div>
+        </div>
+        <span id="progressoLabel">0 / 0</span>
+      </div>
+    </section>
+
+    <div class="titulo-resultados">
+      <span class="titulo-resultados-esq"><span class="destaque">//</span> Resultado</span>
+    </div>
+
+    <section class="painel painel-tabela">
+      <table id="tabela">
+        <thead>
+          <tr>
+            <th class="col-idx">#</th>
+            <th class="col-url">URL</th>
+            <th class="col-res">Resultado</th>
+            <th class="col-status">Status</th>
+          </tr>
+        </thead>
+        <tbody id="tabelaBody"></tbody>
+      </table>
+    </section>
+  </div>
+
+  <script src="/script.js"></script>
+</body>
+</html>
