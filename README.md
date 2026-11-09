@@ -1,7 +1,7 @@
 # Website Phone Extractor
 
 <p align="center">
-  <img width="1285" height="942" alt="image" src="https://github.com/user-attachments/assets/353c2a1f-f03d-499c-b968-15bfc746823c" />
+  <img width="1285" height="942" alt="image" src="https://github.com/user-attachments/assets/bcb830ec-c6ab-4c0b-9db7-5e9d3bc83c7f" />
 </p>
 
 ## Sobre o projeto
