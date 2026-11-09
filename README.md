@@ -32,7 +32,7 @@ A versão disponibilizada neste repositório tem como objetivo apresentar a **in
 > Algumas funcionalidades e componentes da aplicação original não estão disponíveis neste repositório.
 
 <p align="center">
-  <a href="https://ingrydbacelar.github.io/website-phone-extractor/">
+  <a href="https://ingrydbacelar.github.io/hub-ldrs/extrator-telefones/">
     <img src="https://img.shields.io/badge/🔗%20Visualizar%20demonstração-166534?style=for-the-badge&logoColor=white" alt="Visualizar demonstração">
   </a>
 </p>
