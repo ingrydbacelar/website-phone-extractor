@@ -1,3 +1,4 @@
+/* Extrator de Telefones — tema verde escuro / tecnologia (mesma identidade do Validador de E-mails) */
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
 
 :root {
@@ -235,9 +236,9 @@ thead th {
   border-bottom: 1px solid var(--borda);
 }
 
-.col-idx { width: 6%; }
-.col-url { width: 40%; }
-.col-res { width: 40%; }
+.col-idx { width: 64px; white-space: nowrap; }
+.col-url { width: 38%; }
+.col-res { width: 38%; }
 .col-status { width: 14%; }
 
 tbody td {
@@ -253,7 +254,7 @@ tbody tr:nth-child(even) { background: rgba(61,255,138,0.03); }
 tbody tr:hover { background: rgba(61,255,138,0.06); }
 tbody tr:last-child td { border-bottom: none; }
 
-tbody td:nth-child(1) { color: var(--texto-suave); }
+tbody td:nth-child(1) { color: var(--texto-suave); white-space: nowrap; word-break: normal; }
 tbody td:nth-child(2) { color: var(--link); }
 tbody td:nth-child(3) { color: var(--texto); }
 

@@ -1,3 +1,6 @@
+const API_URL = "https://hub-ldrs.onrender.com";
+const API_TOKEN = ""; // mesma chave definida em API_TOKEN no Render (deixe vazio se não usar)
+
 const btnIniciar = document.getElementById("btnIniciar");
 const btnCsv = document.getElementById("btnCsv");
 const statusTexto = document.getElementById("statusTexto");
@@ -7,56 +10,56 @@ const progressoLabel = document.getElementById("progressoLabel");
 const tabelaBody = document.getElementById("tabelaBody");
 const urlsInput = document.getElementById("urls");
 
-let poller = null;
+let resultados = [];
 
-function renderTabela(results) {
-  tabelaBody.innerHTML = "";
-  for (const r of results) {
-    const tr = document.createElement("tr");
-    tr.className = r.status === "ok" ? "status-ok" : "status-erro";
-    tr.innerHTML = `
-      <td>${r.indice}</td>
-      <td>${r.url}</td>
-      <td>${r.resultado}</td>
-      <td>${r.status}</td>
-    `;
-    tabelaBody.appendChild(tr);
-  }
+function listarUrls() {
+  return urlsInput.value.split("\n").map((u) => u.trim()).filter(Boolean);
 }
 
-function atualizarProgresso(total, feitos, rodando) {
-  if (total === 0) {
-    progressoWrap.hidden = true;
-    return;
-  }
+urlsInput.addEventListener("input", () => {
+  if (btnIniciar.disabled) return;
+  const n = listarUrls().length;
+  statusTexto.textContent = n === 0 ? "" : `${n} ${n === 1 ? "site reconhecido" : "sites reconhecidos"}`;
+});
+
+function adicionarLinha(r) {
+  const tr = document.createElement("tr");
+  tr.className = r.status === "ok" ? "status-ok" : "status-erro";
+  [r.indice, r.url, r.resultado, r.status].forEach((v) => {
+    const td = document.createElement("td");
+    td.textContent = v;
+    tr.appendChild(td);
+  });
+  tabelaBody.appendChild(tr);
+}
+
+function atualizarProgresso(total, feitos) {
   progressoWrap.hidden = false;
-  const pct = Math.round((feitos / total) * 100);
-  progressoFill.style.width = pct + "%";
+  progressoFill.style.width = Math.round((feitos / total) * 100) + "%";
   progressoLabel.textContent = `${feitos} / ${total}`;
-  statusTexto.textContent = rodando ? "Extraindo..." : "Concluído.";
 }
 
-async function consultarStatus() {
+async function extrair(url) {
+  const headers = { "Content-Type": "application/json" };
+  if (API_TOKEN) headers["X-Token"] = API_TOKEN;
   try {
-    const resp = await fetch("/api/status");
+    const resp = await fetch(API_URL + "/extrair", {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ url }),
+    });
     const data = await resp.json();
-    renderTabela(data.results);
-    atualizarProgresso(data.total, data.results.length, data.running);
-
-    if (!data.running) {
-      clearInterval(poller);
-      poller = null;
-      btnIniciar.disabled = false;
-      btnCsv.disabled = data.results.length === 0;
-    }
+    if (!resp.ok) return { resultado: data.detail || `HTTP ${resp.status}`, status: "erro" };
+    if (data.telefone) return { resultado: data.telefone, status: "ok" };
+    return { resultado: data.erro || "Nenhum telefone encontrado", status: "erro" };
   } catch (e) {
-    statusTexto.textContent = "Erro ao consultar status.";
+    return { resultado: "Falha ao conectar na API", status: "erro" };
   }
 }
 
 btnIniciar.addEventListener("click", async () => {
-  const texto = urlsInput.value.trim();
-  if (!texto) {
+  const urls = listarUrls();
+  if (urls.length === 0) {
     statusTexto.textContent = "Cole ao menos uma URL.";
     return;
   }
@@ -64,30 +67,32 @@ btnIniciar.addEventListener("click", async () => {
   btnIniciar.disabled = true;
   btnCsv.disabled = true;
   tabelaBody.innerHTML = "";
-  statusTexto.textContent = "Iniciando...";
+  resultados = [];
+  statusTexto.textContent = "Extraindo...";
+  atualizarProgresso(urls.length, 0);
 
-  try {
-    const resp = await fetch("/api/start", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ urls: texto }),
-    });
-    const data = await resp.json();
-
-    if (!resp.ok) {
-      statusTexto.textContent = data.erro || "Erro ao iniciar.";
-      btnIniciar.disabled = false;
-      return;
-    }
-
-    atualizarProgresso(data.total, 0, true);
-    poller = setInterval(consultarStatus, 1000);
-  } catch (e) {
-    statusTexto.textContent = "Falha ao conectar no servidor.";
-    btnIniciar.disabled = false;
+  for (let i = 0; i < urls.length; i++) {
+    const r = { indice: i + 1, url: urls[i], ...(await extrair(urls[i])) };
+    resultados.push(r);
+    adicionarLinha(r);
+    atualizarProgresso(urls.length, i + 1);
   }
+
+  statusTexto.textContent = "Concluído.";
+  btnIniciar.disabled = false;
+  btnCsv.disabled = false;
 });
 
 btnCsv.addEventListener("click", () => {
-  window.location.href = "/api/csv";
+  const esc = (v) => `"${String(v).replace(/"/g, '""')}"`;
+  const linhas = [["#", "URL", "Resultado", "Status"].map(esc).join(";")];
+  for (const r of resultados) {
+    linhas.push([r.indice, r.url, r.resultado, r.status].map(esc).join(";"));
+  }
+  const blob = new Blob(["\ufeff" + linhas.join("\r\n")], { type: "text/csv;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "telefones.csv";
+  a.click();
+  URL.revokeObjectURL(a.href);
 });
