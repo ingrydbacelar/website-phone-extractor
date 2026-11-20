@@ -1,49 +1,49 @@
-# Extrator de Telefones
+# Website Phone Extractor
 
-Duas partes:
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/6f80f2b0-435f-4b53-8b32-917559532fdf" alt="Website Phone Extractor" />
+</p>
 
-- `index.html`, `style.css` e `script.js` — a página da ferramenta (ficam no GitHub Pages, com a mesma identidade visual do Validador de E-mails).
-- `backend/` — a API em Python que visita os sites e extrai os telefones. O GitHub Pages só serve arquivos estáticos e não roda Python, por isso a API precisa de outro lugar.
+## Sobre o projeto
 
-## 1. Publicar a API (ex.: Render)
+O **Website Phone Extractor** é uma ferramenta desenvolvida para **automatizar a identificação e extração de números de telefone em sites de empresas**.
 
-1. Suba a pasta `backend/` para um repositório no GitHub (pode ser o mesmo da página, em uma subpasta).
-2. No Render: **New > Web Service**, aponte para o repositório, em *Root Directory* coloque `backend` e escolha **Docker**.
-3. Variáveis de ambiente:
-   - `ALLOWED_ORIGINS` = `https://SEUUSUARIO.github.io` (sem barra no final). Só esse endereço poderá usar a API pela página.
-   - `API_TOKEN` = uma chave qualquer (opcional, mas recomendado, para ninguém usar sua API). Digite a mesma chave em *Configurações* na página.
-4. Copie o endereço gerado (ex.: `https://extrator-xxxx.onrender.com`).
+A ideia é simplificar o processo de prospecção, reduzindo o tempo gasto na busca manual por contatos e permitindo que o usuário concentre seus esforços na análise e qualificação de potenciais leads.
 
-No plano gratuito do Render a API "dorme" e a primeira consulta pode levar cerca de 1 minuto.
+## Como funciona
 
-### Playwright (opcional)
+A aplicação recebe uma lista de sites e realiza uma busca automatizada por números de telefone, analisando diferentes páginas e fontes de informação.
 
-Para sites que só mostram o telefone depois de rodar JavaScript, troque `ARG PLAYWRIGHT=0` por `ARG PLAYWRIGHT=1` no `Dockerfile`. Precisa de uma instância com pelo menos 1–2 GB de RAM. Sem ele, o resto da lógica funciona normalmente.
+## Funcionalidades
 
-## 2. Publicar a página
+- Extração automatizada de telefones em sites
+- Busca em páginas iniciais e de contato
+- Identificação de números em diferentes formatos
+- Detecção de links de telefone e WhatsApp
+- Identificação de sites indisponíveis ou lentos
+- Processamento de múltiplos sites
 
-1. Abra `script.js` e troque `API_URL` pelo endereço da API.
-2. Coloque os três arquivos (`index.html`, `style.css`, `script.js`) na mesma pasta do repositório do GitHub Pages (ex.: `/extrator-telefones/`).
+## Tecnologias
 
-## Testar localmente
+- HTML5
+- CSS3
+- JavaScript
+- Python
+- FastAPI
+- Playwright
 
-```
-cd backend
-pip install -r requirements.txt
-uvicorn main:app --reload
-```
+## Demonstração
 
-Depois defina `API_URL = "http://localhost:8000"` no `script.js` e abra o arquivo no navegador.
+<p align="center">
+  <a href="https://ingrydbacelar.github.io/website-phone-extractor/">
+    <img src="https://img.shields.io/badge/Acessar%20Phone%20Extractor-14532D?style=for-the-badge&logoColor=white" alt="Acessar Website Phone Extractor">
+  </a>
+</p>
 
-## O que mudou na lógica
+## Autora
 
-- Visita a página inicial e as páginas de contato (achadas pelos links ou por `/contato` e `/fale-conosco`).
-- Lê links `tel:`, links de WhatsApp, dados estruturados (JSON-LD) e o texto visível.
-- Normaliza espaços antes da regex e valida DDD, para aceitar `(98) <span>3222-1234</span>` e `+55 (98) 9 9999-9999` e descartar CEP, CNPJ e datas.
-- Usa o Playwright como última tentativa, sem depender do tamanho do HTML.
-- Mostra todos os números encontrados, a origem de cada um e o motivo quando falha.
-- Sites fora do ar (domínio que não existe, servidor que não conecta em 6 s, erro 5xx) são marcados como **Site fora do ar** na hora, sem tentar outras páginas.
-- Sites lentos são marcados como **Site lento**: se a página inicial não responde a tempo, o site é pulado; se responde devagar (mais de 8 s) ou o limite de 30 s por site estoura, o resultado sai com o aviso. Ao final, a página mostra um resumo com as contagens.
-- Bloqueia endereços internos (localhost, IPs privados) para a API não ser usada para varrer rede interna.
+**Ingryd Bacelar**
 
-Números sem DDD (ex.: só `3222-1234`) são ignorados de propósito, porque não dá para distinguir de outros códigos.
+> © 2026 Ingryd Bacelar. Todos os direitos reservados.
+
+> Este projeto é disponibilizado exclusivamente para fins de demonstração e portfólio. É proibida a reprodução, cópia, modificação, distribuição ou utilização comercial do código sem autorização prévia da autora.
